@@ -2,6 +2,7 @@
 public class FamilyBTNode {
   String firstName;
   String lastName; 
+  
   FamilyBTNode mother; 
   FamilyBTNode father;
   
@@ -11,20 +12,8 @@ public class FamilyBTNode {
   }
   
   public String relationship(FamilyBTNode inNode, int levels) {
-    
-    if(this == inNode) return "Self";
-    else if(father == inNode) {
-      if(levels == 0) return "Father";
-      if(levels == 1) return "Grandfather";
-      else {
-        String rtn = "";
-        for(int i=2; i<=levels; i++) {
-          rtn += "Great ";
-        }
-        return rtn + "Grandfather";
-      }
-    }
-    else if(mother == inNode) {
+    if(inNode == this) return "Self";
+    if(inNode == mother) {
       if(levels == 0) return "Mother";
       if(levels == 1) return "Grandmother";
       else {
@@ -32,25 +21,39 @@ public class FamilyBTNode {
         for(int i=2; i<=levels; i++) {
           rtn += "Great ";
         }
-        return rtn + "Grandmother";
-      }
-    }else {
-      if(mother.inSubtree(inNode)) {
-        return mother.relationship(inNode, levels + 1);
-      }
-
-      if(father.inSubtree(inNode)) {
-        return father.relationship(inNode, levels + 1);
+        rtn += "Grandmother";
+        return rtn;
       }
     }
-    return "Not Found";
+    if(inNode == father) {
+      if(levels == 0) return "Father";
+      if(levels == 1) return "Grandfather";
+      else {
+        String rtn = "";
+        for(int i=2; i<=levels; i++) {
+          rtn += "Great ";
+        }
+        rtn += "Grandfather";
+        return rtn;
+      }
+    }
+    if(mother != null && mother.inSubtree(inNode)) {
+      return mother.relationship(inNode, levels+1);
+    }else if(father != null && father.inSubtree(inNode)) {
+      return father.relationship(inNode, levels+1);
+    }
+    return "No Relationship";
+
   }
   
   public boolean inSubtree(FamilyBTNode inNode) {
+    if(inNode == null) return false;
+    if(inNode == this) return true; // `this` can never be null
+    // mother.inSubtree(inNode) || father.inSubtree(inNode) 
+    
     boolean rtn = false;
-    if(this == inNode) return true;
+    if(mother != null) rtn = (rtn || mother.inSubtree(inNode));
     if(father != null) rtn |= father.inSubtree(inNode);
-    if(mother != null) rtn |= mother.inSubtree(inNode);
     return rtn;
   }
   
